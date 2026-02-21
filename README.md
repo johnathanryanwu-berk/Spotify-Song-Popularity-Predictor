@@ -107,8 +107,8 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 ---
 
 ## Dashboard Preview
-![Dashboard](assets/dashboard.png)
-![API Docs](assets/api_docs.png)
+![Dashboard](Dashboard/dashboard.png)
+![API Docs](Dashboard/api_docs.png)
 ---
 
 ## Example Results
