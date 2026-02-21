@@ -1,74 +1,150 @@
 # Spotify Song Popularity Prediction
 
-## Abstract
-We modeled Spotify song popularity using audio features and metadata from a 114k‑track dataset, applying **LASSO, PCA, CART, Random Forest, and XGBoost** to evaluate which features drive mainstream success. By comparing linear and nonlinear approaches, we find that nonlinear ensemble methods, particularly Random Forest and XGBoost trained on LASSO‑selected features, achieve the strongest predictive performance, significantly improving **ROC‑AUC** and **recall** over the baseline.  
-
-Key drivers of popularity include **loudness, danceability, instrumentalness, duration, and genre**, suggesting that both sonic and stylistic characteristics play meaningful roles. These results demonstrate that machine learning can provide actionable insight for artists, producers, and streaming platforms in anticipating and shaping song popularity.
-
----
-
-## Project Description and Motivation
-This project explores **what drives mainstream musical success** by modeling Spotify song popularity from audio features and metadata.
-
-- **Artists & Producers**: Experiment with song features correlated with popularity to maximize audience appeal.  
-- **Streaming Platforms**: Improve recommendation systems by identifying features that drive popularity.  
-- **Record Labels**: Allocate marketing resources toward tracks with higher predicted success.  
+An end-to-end machine learning project that predicts whether a song will be **popular**
+(top quantile of Spotify popularity) using audio features and metadata.
+The project compares multiple modeling strategies and includes an interactive,
+Spotify-styled dashboard for real-time inference.
+Check out the [dashboard](https://spotify-song-popularity-prediction.onrender.com/predict)!
 
 ---
 
-## Dataset and Learning Problem
-- **Source**: Spotify Tracks Dataset (Kaggle)  
-- **Size**: ~114,000 songs  
-- **Columns**:  
-  `track_id, artists, album_name, track_name, popularity, duration_ms, explicit, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, time_signature, track_genre`
-
-- **Target Variable**: `popularity` (0–100 scale)  
-- **Learning Problem**: Predict whether a song is in the **top 10% popularity** based on features.  
-
-### Challenges
-- Duplicate tracks  
-- Irrelevant columns (e.g., `track_id`, `album_name`)  
-- Encoding categorical features  
-- Multicollinearity (e.g., energy vs. loudness vs. danceability)
-
-### Preprocessing
-- Drop missing values & duplicates  
-- Remove irrelevant columns  
-- Encode categorical features (`explicit`, `key`, `mode`, `time_signature`, `track_genre`)  
-- Feature selection (LASSO) & transformation (PCA)  
+## Project Highlights
+- Full ML lifecycle: data preparation → modeling → evaluation → deployment
+- Multiple model families:
+  - LASSO Logistic Regression
+  - CART & Random Forest
+  - XGBoost (with LASSO feature selection and PCA)
+- Feature selection using L1 regularization (LASSO)
+- Dimensionality reduction using PCA
+- Production-style scikit-learn pipelines
+- Interactive Dash dashboard with model selection and real-time predictions
 
 ---
 
-## Methodology
+## Problem Definition
+**Task:** Binary classification  
+**Goal:** Predict whether a song is *popular*.
 
-### 1. Baseline Model: LASSO Regression
-- Simple, interpretable coefficients  
-- Identifies positively/negatively correlated features  
+A song is labeled **popular = 1** if its Spotify popularity score falls within the
+**top 10%** of the dataset; otherwise **popular = 0**.
 
-### 2. Feature Selection & Transformation
-- **LASSO**: Selects important features, reduces noise, mitigates multicollinearity  
-- **PCA**: Transforms correlated features into principal components  
+**Input Features**
+- Audio features: danceability, energy, loudness, tempo, valence, etc.
+- Metadata: genre, key, mode, explicit flag, time signature
+- Duration (converted to milliseconds)
 
-### 3. Advanced Models
-- **CART**: Simple decision tree, interpretable relationships  
-- **Random Forest**: Handles noisy features, stable importance rankings  
-- **XGBoost**: Boosting method, strongest predictive performance  
+---
 
-### Evaluation
-- Train/Test Accuracy  
-- ROC‑AUC  
-- Classification Report  
-- Confusion Matrix  
-- Feature Importances  
+## Modeling Strategy
 
-## Dashboard
-We built an interactive **Dash app** that allows users to:
-- Input song feature parameters  
-- Generate predicted popularity probabilities   
+Two parallel modeling pipelines are implemented.
 
-The dashboard code is included at the bottom of the spotify_code notebook
+### LASSO-Based Pipeline
 
-## How to Run
-- Download the spotify_code notebook and spotify_dataset.csv
-- Run the code from top to bottom
-- Dashboard can be accessed at port 8052 (http://127.0.0.1:8052/)
+One-Hot Encoding + Standardization
+→ L1 Logistic Regression (feature selection)
+→ CART / Random Forest / XGBoost
+
+- LASSO performs automatic feature selection by shrinking coefficients to zero
+- Selected features are passed to tree-based and boosting models
+- Improves interpretability and reduces overfitting
+
+---
+
+### PCA-Based Pipeline
+
+Ordinal Encoding + Standardization
+→ Principal Component Analysis (PCA)
+→ CART / Random Forest / XGBoost
+
+- PCA reduces dimensionality while preserving variance
+- Enables efficient modeling in lower-dimensional space
+- Useful for comparison against sparse, feature-selected models
+
+---
+
+## Interactive Dashboard
+
+The project includes a Spotify-styled **Dash dashboard** that allows users to:
+- Adjust audio features and metadata
+- Select among trained models:
+  - LASSO
+  - CART + LASSO
+  - Random Forest + LASSO
+  - XGBoost + LASSO
+  - CART + PCA
+  - Random Forest + PCA
+  - XGBoost + PCA
+- View predicted probability of popularity in real time
+
+All models are loaded as **joblib pipelines**, so preprocessing and inference are
+handled automatically.
+
+---
+
+## Run Locally
+### 1. Start the API (Terminal 1)
+```bash
+.venv/bin/python -m uvicorn api:app --port 8000
+```
+### 2. Start the Dashboard (Terminal 2)
+```bash
+.venv/bin/python app_advanced.py
+```
+---
+
+## Deployment (Dash + FastAPI on one URL)
+
+This repo deploys as a single web app:
+
+- Dash UI served at `/`
+- FastAPI served at `/api` (docs at `/api/docs`)
+
+### Local
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
+---
+
+## Dashboard Preview
+![Dashboard](assets/dashboard.png)
+![API Docs](assets/api_docs.png)
+---
+
+## Example Results
+
+- **LASSO Logistic Regression**: ROC-AUC ≈ **0.68**
+- **CART + LASSO**: ROC-AUC ≈ **0.71**
+- **Random Forest + LASSO**: ROC-AUC ≈ **0.72**
+- **XGBoost + LASSO**: ROC-AUC ≈ **0.74**
+- **XGBoost + PCA**: ROC-AUC ≈ **0.72**
+
+(Exact results may vary by random seed and train/test split.)
+
+---
+
+## How to Run the Project
+
+1. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+2. Preprocess data
+```bash
+python -m src.data_prep \
+  --input data/raw/spotify_dataset.csv \
+  --output data/processed/spotify_processed.csv
+```
+3. Train all models
+```bash
+python -m src.train --data data/processed/spotify_processed.csv
+```
+4. Evaluate models
+```bash
+python -m src.evaluate --data data/processed/spotify_processed.csv
+```
+5. Launch the advanced dashboard
+```bash
+python app_advanced.py
+```
+---
