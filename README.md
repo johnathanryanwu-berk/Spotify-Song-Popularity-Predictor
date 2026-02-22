@@ -231,21 +231,21 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 
 ## Future Improvements
 
-- Threshold tuning to improve minority class recall
-- Cost-sensitive learning for hit detection
-- PR-AUC evaluation under heavy class imbalance
-- Bayesian hyperparameter optimization
-- Model calibration for probability reliability
+- Classification threshold optimization based on business cost tradeoffs  
+- Cost-sensitive learning to reduce false negatives  
+- Precision-Recall AUC evaluation under class imbalance  
+- Bayesian hyperparameter optimization  
+- Probability calibration for reliable downstream decision-making
 
 ---
 
 ## What This Project Demonstrates
 
-- Handling severe class imbalance
-- Feature selection vs dimensionality reduction tradeoffs
-- Nonlinear ensemble modeling
-- Production-ready ML pipelines
-- Full-stack ML deployment (Dash + FastAPI)
+- Robust modeling under severe class imbalance  
+- Comparative analysis of supervised (LASSO) vs unsupervised (PCA) dimensionality strategies  
+- Nonlinear ensemble modeling for minority class detection  
+- End-to-end ML pipeline development and reproducibility  
+- Production deployment with Dash (UI) + FastAPI (API)
 
 ---
 
