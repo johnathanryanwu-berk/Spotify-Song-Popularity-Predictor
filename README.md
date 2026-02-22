@@ -100,10 +100,10 @@ Therefore, evaluation focuses on:
 | Random Forest + LASSO | **0.81** | **0.19** |
 | XGBoost + LASSO | 0.71 | 0.006 |
 
-
 PCA-based pipelines were also evaluated as dimensionality reduction benchmarks. 
 While PCA models achieved comparable overall accuracy, they consistently underperformed LASSO-based pipelines in ROC-AUC and minority class recall. 
 For clarity and focus on deployment-ready performance, the main comparison table highlights the stronger LASSO-based models.
+
 ---
 
 ## Interpretation
