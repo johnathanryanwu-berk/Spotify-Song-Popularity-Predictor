@@ -7,6 +7,11 @@ This project compares linear and nonlinear modeling strategies, implements produ
 Live Dashboard:  
 https://spotify-song-popularity-prediction.onrender.com/predict
 
+How to Run Dashboard:
+1. Download Spotify Notebook
+2. Run the notebook code
+3. Start interacting with the dashboard!
+
 ---
 
 # Business Problem
